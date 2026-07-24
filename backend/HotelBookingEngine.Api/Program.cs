@@ -3,6 +3,7 @@ using HotelBookingEngine.Api.Extensions;
 var builder = WebApplication.CreateBuilder(args);
 builder.ConfigureSerilog();
 builder.Services.AddPersistence(builder.Configuration, builder.Environment);
+builder.Services.AddApplicationServices();
 
 // Add services to the container.
 
