@@ -12,14 +12,43 @@ frontend integration.
 **Frontend:** React 19, TypeScript, Vite, Tailwind CSS, Axios, React Router,
 TanStack Query, React Hook Form, Zod.
 
-## Status
-
-Work in progress — see `prompts/project-01.md` for the full specification and
-`.ai/` for the standards this project follows.
-
 ## Getting Started
 
-Setup instructions will be added as the backend and frontend are scaffolded.
+### Backend
+
+```bash
+cd backend
+dotnet restore
+dotnet build
+dotnet run --project HotelBookingEngine.Api
+```
+
+The API listens on the URL printed in the console (also defined in
+`HotelBookingEngine.Api/Properties/launchSettings.json`). Swagger UI is
+available at `/swagger` in Development.
+
+### Frontend
+
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+The app runs at `http://localhost:5173` and expects the backend URL in
+`frontend/.env.development` (`VITE_API_BASE_URL`) to match the backend's
+actual port.
+
+### Running Both
+
+Start the backend first, then the frontend, then open the frontend URL in a
+browser. The home page calls `GET /api/health` to confirm the two apps are
+connected.
+
+## Status
+
+Phase 1 (solution structure, backend, frontend) complete. Next: Phase 2 —
+Authentication.
 
 ## License
 
