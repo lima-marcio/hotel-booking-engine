@@ -1,4 +1,7 @@
+using HotelBookingEngine.Api.Extensions;
+
 var builder = WebApplication.CreateBuilder(args);
+builder.ConfigureSerilog();
 
 // Add services to the container.
 
