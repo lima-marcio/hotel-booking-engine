@@ -7,12 +7,20 @@ builder.Services.AddPersistence(builder.Configuration, builder.Environment);
 // Add services to the container.
 
 builder.Services.AddControllers();
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerWithJwt();
 
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
 
 app.UseGlobalExceptionHandling();
+
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI();
+}
 
 app.UseHttpsRedirection();
 
