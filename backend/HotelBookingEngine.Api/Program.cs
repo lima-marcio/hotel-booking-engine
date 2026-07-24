@@ -21,7 +21,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseGlobalExceptionHandling();
 app.UseHttpsRedirection();
-app.UseCors(HotelBookingEngine.Api.Extensions.CorsServiceCollectionExtensions.FrontendPolicyName);
+app.UseCors(FrontendCorsServiceCollectionExtensions.FrontendPolicyName);
 app.UseAuthorization();
 app.MapControllers();
 

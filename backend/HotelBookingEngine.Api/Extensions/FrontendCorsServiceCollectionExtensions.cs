@@ -1,6 +1,6 @@
 namespace HotelBookingEngine.Api.Extensions;
 
-public static class CorsServiceCollectionExtensions
+public static class FrontendCorsServiceCollectionExtensions
 {
     public const string FrontendPolicyName = "FrontendPolicy";
 
