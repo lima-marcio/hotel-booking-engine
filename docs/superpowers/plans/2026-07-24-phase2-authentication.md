@@ -668,6 +668,7 @@ public static class JwtAuthenticationServiceCollectionExtensions
         services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             .AddJwtBearer(options =>
             {
+                options.MapInboundClaims = false;
                 options.TokenValidationParameters = new TokenValidationParameters
                 {
                     ValidateIssuer = true,
@@ -686,6 +687,8 @@ public static class JwtAuthenticationServiceCollectionExtensions
 ```
 
 Save as `backend/HotelBookingEngine.Api/Extensions/JwtAuthenticationServiceCollectionExtensions.cs`.
+
+**Important, verified-in-review correction:** `options.MapInboundClaims = false;` is required here. By default, ASP.NET Core's `JwtBearerHandler` remaps well-known inbound claim types — in particular it rewrites the JWT's `"sub"` claim to `ClaimTypes.NameIdentifier` — before the `ClaimsPrincipal` reaches application code. `AuthService.GetCurrentUser` (Task 3) reads `JwtRegisteredClaimNames.Sub` directly, matching exactly what `JwtTokenGenerator` (Task 2) writes into the token. Without `MapInboundClaims = false`, `/api/auth/me` would silently 500 (null-forgiving `!` on a missing claim) against a real bearer-authenticated request in Task 5's integration tests and in the browser, even though Tasks 2 and 3's own unit tests pass (they never go through `JwtBearerHandler`, so the remapping never happens in those tests). This was caught in Task 3's review, not the original design — treat it as load-bearing, not optional.
 
 - [ ] **Step 3: Register the new services**
 
