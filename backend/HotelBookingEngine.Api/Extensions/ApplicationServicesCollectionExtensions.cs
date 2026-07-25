@@ -1,5 +1,6 @@
 using HotelBookingEngine.Api.Features.Auth;
 using HotelBookingEngine.Api.Features.Health;
+using HotelBookingEngine.Api.Features.Hotels;
 using Microsoft.AspNetCore.Identity;
 
 namespace HotelBookingEngine.Api.Extensions;
@@ -12,6 +13,7 @@ public static class ApplicationServicesCollectionExtensions
         services.AddScoped<IAuthService, AuthService>();
         services.AddScoped<IJwtTokenGenerator, JwtTokenGenerator>();
         services.AddSingleton<IPasswordHasher<User>, PasswordHasher<User>>();
+        services.AddScoped<IHotelService, HotelService>();
 
         return services;
     }
