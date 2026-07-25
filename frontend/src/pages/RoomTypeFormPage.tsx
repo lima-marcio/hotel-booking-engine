@@ -40,7 +40,12 @@ export function RoomTypeFormPage() {
   });
 
   useEffect(() => {
-    if (existingRoomType) {
+    if (existingRoomType && isEditMode) {
+      if (existingRoomType.hotelId !== hotelId) {
+        navigate(`/hotels/${existingRoomType.hotelId}/room-types`, { replace: true });
+        return;
+      }
+
       reset({
         name: existingRoomType.name,
         description: existingRoomType.description,
@@ -48,7 +53,7 @@ export function RoomTypeFormPage() {
         dailyRate: existingRoomType.dailyRate,
       });
     }
-  }, [existingRoomType, reset]);
+  }, [existingRoomType, isEditMode, hotelId, navigate, reset]);
 
   const mutation = useMutation({
     mutationFn: (values: RoomTypeFormValues) =>
