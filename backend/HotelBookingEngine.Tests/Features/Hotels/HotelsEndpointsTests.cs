@@ -135,6 +135,21 @@ public class HotelsEndpointsTests : IDisposable
     }
 
     [Fact]
+    public async Task Update_AsAdmin_ReturnsOkWithUpdatedData()
+    {
+        AuthorizeAs(await LoginAsync("admin", "Admin123!"));
+        var created = await (await _client.PostAsJsonAsync("/api/hotels", SampleRequestBody()))
+            .Content.ReadFromJsonAsync<HotelResponse>();
+
+        var response = await _client.PutAsJsonAsync($"/api/hotels/{created!.Id}", SampleRequestBody("Updated Grand Hotel"));
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        var updated = await response.Content.ReadFromJsonAsync<HotelResponse>();
+        Assert.Equal("Updated Grand Hotel", updated!.Name);
+        Assert.Equal(created.Id, updated.Id);
+    }
+
+    [Fact]
     public async Task Delete_AsReceptionist_ReturnsForbidden()
     {
         AuthorizeAs(await LoginAsync("admin", "Admin123!"));
