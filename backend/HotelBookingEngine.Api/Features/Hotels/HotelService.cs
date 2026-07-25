@@ -46,18 +46,24 @@ public class HotelService : IHotelService
         return ToResponse(hotel);
     }
 
-    public async Task<bool> DeleteAsync(int id, CancellationToken cancellationToken)
+    public async Task<HotelDeleteResult> DeleteAsync(int id, CancellationToken cancellationToken)
     {
         var hotel = await _dbContext.Hotels.FindAsync([id], cancellationToken);
         if (hotel is null)
         {
-            return false;
+            return HotelDeleteResult.NotFound;
+        }
+
+        var hasRoomTypes = await _dbContext.RoomTypes.AnyAsync(rt => rt.HotelId == id, cancellationToken);
+        if (hasRoomTypes)
+        {
+            return HotelDeleteResult.HasRoomTypes;
         }
 
         _dbContext.Hotels.Remove(hotel);
         await _dbContext.SaveChangesAsync(cancellationToken);
 
-        return true;
+        return HotelDeleteResult.Deleted;
     }
 
     public async Task<HotelResponse?> GetByIdAsync(int id, CancellationToken cancellationToken)

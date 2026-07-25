@@ -1,4 +1,5 @@
 using HotelBookingEngine.Api.Features.Hotels;
+using HotelBookingEngine.Api.Features.RoomTypes;
 using HotelBookingEngine.Api.Persistence;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
@@ -69,22 +70,42 @@ public class HotelServiceTests : IDisposable
     }
 
     [Fact]
-    public async Task DeleteAsync_WithExistingId_RemovesHotelAndReturnsTrue()
+    public async Task DeleteAsync_WithExistingId_RemovesHotelAndReturnsDeleted()
     {
         var created = await _sut.CreateAsync(SampleRequest(), CancellationToken.None);
 
         var result = await _sut.DeleteAsync(created.Id, CancellationToken.None);
 
-        Assert.True(result);
+        Assert.Equal(HotelDeleteResult.Deleted, result);
         Assert.Null(await _dbContext.Hotels.FindAsync(created.Id));
     }
 
     [Fact]
-    public async Task DeleteAsync_WithUnknownId_ReturnsFalse()
+    public async Task DeleteAsync_WithUnknownId_ReturnsNotFound()
     {
         var result = await _sut.DeleteAsync(999, CancellationToken.None);
 
-        Assert.False(result);
+        Assert.Equal(HotelDeleteResult.NotFound, result);
+    }
+
+    [Fact]
+    public async Task DeleteAsync_WithExistingRoomTypes_ReturnsHasRoomTypesAndDoesNotDelete()
+    {
+        var created = await _sut.CreateAsync(SampleRequest(), CancellationToken.None);
+        _dbContext.RoomTypes.Add(new RoomType
+        {
+            HotelId = created.Id,
+            Name = "Deluxe",
+            Description = "Spacious room with a view",
+            Capacity = 2,
+            DailyRate = 150m
+        });
+        await _dbContext.SaveChangesAsync();
+
+        var result = await _sut.DeleteAsync(created.Id, CancellationToken.None);
+
+        Assert.Equal(HotelDeleteResult.HasRoomTypes, result);
+        Assert.NotNull(await _dbContext.Hotels.FindAsync(created.Id));
     }
 
     [Fact]

@@ -48,7 +48,7 @@ public class HotelsController : ControllerBase
     [Authorize(Roles = "Admin")]
     public async Task<IActionResult> Delete(int id, CancellationToken cancellationToken)
     {
-        var deleted = await _hotelService.DeleteAsync(id, cancellationToken);
-        return deleted ? NoContent() : NotFound();
+        var result = await _hotelService.DeleteAsync(id, cancellationToken);
+        return result == HotelDeleteResult.Deleted ? NoContent() : NotFound();
     }
 }
