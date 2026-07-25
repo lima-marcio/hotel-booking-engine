@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import type { AxiosError } from "axios";
+import { isAxiosError } from "axios";
 import { deleteHotel, listHotels } from "../features/hotels/hotelService";
 import { useAuth } from "../hooks/useAuth";
 
@@ -20,9 +20,11 @@ export function HotelsPage() {
       setDeleteError(null);
       queryClient.invalidateQueries({ queryKey: ["hotels"] });
     },
-    onError: (error: AxiosError) => {
+    onError: (error) => {
       const message =
-        typeof error.response?.data === "string" ? error.response.data : "Unable to delete this hotel.";
+        isAxiosError(error) && typeof error.response?.data === "string"
+          ? error.response.data
+          : "Unable to delete this hotel.";
       setDeleteError(message);
     },
   });

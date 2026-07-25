@@ -60,6 +60,9 @@ export function RoomTypeFormPage() {
       isEditMode ? updateRoomType(roomTypeId!, values) : createRoomType(hotelId, values),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["hotels", hotelId, "room-types"] });
+      if (roomTypeId !== undefined) {
+        queryClient.invalidateQueries({ queryKey: ["room-types", roomTypeId] });
+      }
       navigate(`/hotels/${hotelId}/room-types`);
     },
   });
