@@ -25,6 +25,9 @@ export function HomePage() {
           <p>
             Logged in as {user.username} ({user.role})
           </p>
+          <Link to="/hotels" className="text-blue-600 underline">
+            Hotels
+          </Link>
           <button onClick={logout} className="rounded bg-gray-200 px-4 py-2">
             Log out
           </button>
