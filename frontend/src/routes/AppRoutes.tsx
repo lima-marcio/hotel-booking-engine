@@ -3,6 +3,7 @@ import { HomePage } from "../pages/HomePage";
 import { LoginPage } from "../pages/LoginPage";
 import { HotelsPage } from "../pages/HotelsPage";
 import { HotelFormPage } from "../pages/HotelFormPage";
+import { HotelRoomTypesPage } from "../pages/HotelRoomTypesPage";
 import { ProtectedRoute } from "./ProtectedRoute";
 
 export function AppRoutes() {
@@ -31,6 +32,14 @@ export function AppRoutes() {
         element={
           <ProtectedRoute roles={["Admin"]}>
             <HotelFormPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/hotels/:hotelId/room-types"
+        element={
+          <ProtectedRoute>
+            <HotelRoomTypesPage />
           </ProtectedRoute>
         }
       />
