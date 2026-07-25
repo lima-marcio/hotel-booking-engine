@@ -81,3 +81,7 @@ Routing: adds `/login`. The existing `HomePage` is extended (not replaced) to al
 - Refresh tokens.
 - Frontend automated tests (not in the approved stack).
 - Password reset / account recovery.
+
+## Known Limitation (consciously accepted)
+
+The seeded `admin`/`Admin123!` account (see Data Model) is created by the `AddUsers` migration regardless of environment, and the password is documented in the root `README.md`. Flagged in Phase 2's final review as a real production-hardening gap — a real deployment would ship with a publicly-known admin password and no built-in rotation path. Explicitly accepted for this project: it is a portfolio piece that is not deployed to a real production environment, and the simplicity of "one seeded account, no self-registration" is worth more here than production-grade credential hygiene. If this project is ever deployed for real, gate the `HasData` seed to non-Production (or replace it with an out-of-band admin bootstrap step) before doing so.
