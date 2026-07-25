@@ -91,6 +91,30 @@ public class RoomTypesEndpointsTests : IDisposable
     };
 
     [Fact]
+    public async Task ListByHotel_WithoutToken_ReturnsUnauthorized()
+    {
+        var response = await _client.GetAsync("/api/hotels/1/room-types");
+
+        Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task GetById_AsAdmin_ReturnsOkWithRoomType()
+    {
+        AuthorizeAs(await LoginAsync("admin", "Admin123!"));
+        var hotelId = await CreateHotelAsync();
+        var created = await (await _client.PostAsJsonAsync($"/api/hotels/{hotelId}/room-types", SampleRequestBody()))
+            .Content.ReadFromJsonAsync<RoomTypeResponse>();
+
+        var response = await _client.GetAsync($"/api/room-types/{created!.Id}");
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        var roomType = await response.Content.ReadFromJsonAsync<RoomTypeResponse>();
+        Assert.Equal(created.Id, roomType!.Id);
+        Assert.Equal(created.Name, roomType.Name);
+    }
+
+    [Fact]
     public async Task ListByHotel_WithUnknownHotelId_ReturnsNotFound()
     {
         AuthorizeAs(await LoginAsync("admin", "Admin123!"));
