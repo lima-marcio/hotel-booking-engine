@@ -32,7 +32,7 @@ export function HotelFormPage() {
     register,
     handleSubmit,
     reset,
-    formState: { errors, isSubmitting },
+    formState: { errors },
   } = useForm<HotelFormValues>({
     resolver: zodResolver(hotelSchema),
   });
@@ -95,10 +95,10 @@ export function HotelFormPage() {
         </div>
         <button
           type="submit"
-          disabled={isSubmitting}
+          disabled={mutation.isPending}
           className="rounded bg-blue-600 px-4 py-2 text-white disabled:opacity-50"
         >
-          {isSubmitting ? "Saving..." : "Save"}
+          {mutation.isPending ? "Saving..." : "Save"}
         </button>
       </form>
     </main>
