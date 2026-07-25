@@ -54,7 +54,7 @@ connected.
 
 ## Status
 
-Phase 1, Phase 2 (Authentication), and Phase 3 (Hotels) complete. Next: Phase 4 — Room Types.
+Phase 1, Phase 2 (Authentication), Phase 3 (Hotels), and Phase 4 (Room Types) complete. Next: Phase 5 — Rooms.
 
 ## License
 
