@@ -49,6 +49,12 @@ public class HotelsController : ControllerBase
     public async Task<IActionResult> Delete(int id, CancellationToken cancellationToken)
     {
         var result = await _hotelService.DeleteAsync(id, cancellationToken);
-        return result == HotelDeleteResult.Deleted ? NoContent() : NotFound();
+        return result switch
+        {
+            HotelDeleteResult.Deleted => NoContent(),
+            HotelDeleteResult.NotFound => NotFound(),
+            HotelDeleteResult.HasRoomTypes => Conflict("Cannot delete a hotel that still has room types. Delete its room types first."),
+            _ => throw new InvalidOperationException($"Unhandled {nameof(HotelDeleteResult)} value: {result}")
+        };
     }
 }

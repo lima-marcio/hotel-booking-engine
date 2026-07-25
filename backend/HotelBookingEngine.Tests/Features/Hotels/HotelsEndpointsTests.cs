@@ -3,6 +3,7 @@ using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using HotelBookingEngine.Api.Features.Auth;
 using HotelBookingEngine.Api.Features.Hotels;
+using HotelBookingEngine.Api.Features.RoomTypes;
 using HotelBookingEngine.Api.Persistence;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
@@ -174,6 +175,35 @@ public class HotelsEndpointsTests : IDisposable
 
         var getResponse = await _client.GetAsync($"/api/hotels/{created.Id}");
         Assert.Equal(HttpStatusCode.NotFound, getResponse.StatusCode);
+    }
+
+    [Fact]
+    public async Task Delete_WithExistingRoomType_ReturnsConflict()
+    {
+        AuthorizeAs(await LoginAsync("admin", "Admin123!"));
+        var created = await (await _client.PostAsJsonAsync("/api/hotels", SampleRequestBody()))
+            .Content.ReadFromJsonAsync<HotelResponse>();
+
+        using (var scope = _factory.Services.CreateScope())
+        {
+            var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+            dbContext.RoomTypes.Add(new RoomType
+            {
+                HotelId = created!.Id,
+                Name = "Deluxe",
+                Description = "Spacious room with a view",
+                Capacity = 2,
+                DailyRate = 150m
+            });
+            dbContext.SaveChanges();
+        }
+
+        var response = await _client.DeleteAsync($"/api/hotels/{created!.Id}");
+
+        Assert.Equal(HttpStatusCode.Conflict, response.StatusCode);
+
+        var getResponse = await _client.GetAsync($"/api/hotels/{created.Id}");
+        Assert.Equal(HttpStatusCode.OK, getResponse.StatusCode);
     }
 
     public void Dispose()
