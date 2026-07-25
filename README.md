@@ -39,6 +39,13 @@ The app runs at `http://localhost:5173` and expects the backend URL in
 `frontend/.env.development` (`VITE_API_BASE_URL`) to match the backend's
 actual port.
 
+### Default Credentials (Development)
+
+The database is seeded with one admin account on first run:
+
+- Username: `admin`
+- Password: `Admin123!`
+
 ### Running Both
 
 Start the backend first, then the frontend, then open the frontend URL in a
@@ -47,8 +54,7 @@ connected.
 
 ## Status
 
-Phase 1 (solution structure, backend, frontend) complete. Next: Phase 2 —
-Authentication.
+Phase 1 and Phase 2 (Authentication) complete. Next: Phase 3 — Hotels.
 
 ## License
 
