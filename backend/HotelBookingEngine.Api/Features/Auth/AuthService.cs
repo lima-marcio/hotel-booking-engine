@@ -8,6 +8,12 @@ namespace HotelBookingEngine.Api.Features.Auth;
 
 public class AuthService : IAuthService
 {
+    // Fixed, valid-format PasswordHasher<User> v3 hash used solely to burn equivalent CPU time
+    // when a username lookup fails, so that "unknown username" and "wrong password" responses
+    // are not distinguishable by timing. It does not correspond to any real user's password.
+    private const string DummyPasswordHash =
+        "AQAAAAIAAYagAAAAEBag4MgoHkTKwpWe2+sKxK60skErbY5tpCPT1jjrfod0ASiHb5X9WA7anEBRxBTQAA==";
+
     private readonly AppDbContext _dbContext;
     private readonly IJwtTokenGenerator _tokenGenerator;
     private readonly IPasswordHasher<User> _passwordHasher;
@@ -27,6 +33,10 @@ public class AuthService : IAuthService
 
         if (user is null)
         {
+            // Pay the same PBKDF2 verification cost as the "user found" path so that response
+            // latency does not leak whether the username exists (timing side channel / username
+            // enumeration). The result of this dummy verification is intentionally ignored.
+            _passwordHasher.VerifyHashedPassword(null!, DummyPasswordHash, request.Password);
             return null;
         }
 
