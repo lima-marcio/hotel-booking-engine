@@ -27,6 +27,7 @@ public class RoomTypeConfiguration : IEntityTypeConfiguration<RoomType>
         builder.HasOne<Hotel>()
             .WithMany()
             .HasForeignKey(rt => rt.HotelId)
-            .IsRequired();
+            .IsRequired()
+            .OnDelete(DeleteBehavior.Restrict);
     }
 }

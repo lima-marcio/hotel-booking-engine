@@ -34,7 +34,7 @@ The spec's field grouping literally puts `Capacity` and `Daily Rate` under **Roo
 | `Capacity` | `int` | required, > 0 |
 | `DailyRate` | `decimal` | required, > 0 |
 
-`RoomTypeConfiguration : IEntityTypeConfiguration<RoomType>` sets the above plus the FK relationship (no cascade delete behavior configured on the EF relationship itself — the restriction is enforced in `HotelService`, at the application layer, before EF ever attempts the delete, so the database-level default FK behavior is moot either way).
+`RoomTypeConfiguration : IEntityTypeConfiguration<RoomType>` sets the above plus the FK relationship, with `DeleteBehavior.Restrict` explicitly configured on the EF relationship itself as defense-in-depth beneath the application-layer check in `HotelService`. This matters because `Microsoft.Data.Sqlite` enforces FK constraints by default (`PRAGMA foreign_keys=ON`), so without an explicit `Restrict`, EF Core's default cascade behavior for a required relationship would silently delete room types if any future code path ever removed a `Hotel` without going through `HotelService.DeleteAsync`'s guard.
 
 ### Feature slice — `Features/RoomTypes/`
 
