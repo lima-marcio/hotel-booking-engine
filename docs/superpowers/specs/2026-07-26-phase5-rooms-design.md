@@ -25,6 +25,7 @@ This document records the relationship, delete-safety, uniqueness, and routing d
 - **Authorization mirrors Hotels/RoomTypes exactly**: `GET` requires only `[Authorize]`; `POST`/`PUT`/`DELETE` require `[Authorize(Roles="Admin")]` in addition.
 - **Frontend routes nest under the room type** (`/hotels/:hotelId/room-types/:roomTypeId/rooms`, `/rooms/new`, `/rooms/:id/edit`); `hotelId` stays in the URL purely for the back-link/breadcrumb to the hotel's room types page — the API itself never needs it, since `roomTypeId`/`id` are already sufficient. `HotelRoomTypesPage` gains a "Rooms" link per row, visible to any authenticated user (reads are open).
 - **`RoomFormPage`'s create/update mutation needs an `onError` handler** surfacing the backend's new `409` (duplicate room number) — the first time a create/update form (not just a delete) in this project needs to display a business-rule conflict from the API, using the same `isAxiosError` type guard already fixed on the Phase 4 delete-error handling.
+- **Closing the gap Phase 4 explicitly deferred**: `HotelRoomTypesPage`'s delete mutation gets the same `onError` handler `HotelsPage` already has, because deleting a room type with existing rooms is now a real, expected failure mode (the backend's new `409`) — Phase 4's design doc flagged this exact gap ("This becomes relevant again in Phase 5 ... revisit then, not now"), and this is that revisit.
 
 ## Backend Design
 
@@ -109,7 +110,7 @@ public enum RoomTypeDeleteResult { Deleted, NotFound, HasRooms }
 /hotels/:hotelId/room-types/:roomTypeId/rooms/:id/edit   → ProtectedRoute roles=["Admin"]  → RoomFormPage
 ```
 
-`HotelRoomTypesPage` gains a "Rooms" link per row (visible to any authenticated user). `RoomTypeRoomsPage` fetches both `getHotel(hotelId)` and `getRoomType(roomTypeId)` to render a header like "Rooms — Deluxe (Grand Hotel)". `RoomFormPage`'s create/update mutation gains an `onError` handler that checks `isAxiosError(err) && err.response?.status === 409` and displays the backend's message inline — the first form-level (not just delete-level) business-rule error surfaced in this project.
+`HotelRoomTypesPage` gains a "Rooms" link per row (visible to any authenticated user) **and** an `onError` handler on its delete mutation, identical in shape to `HotelsPage`'s (Phase 4), surfacing the backend's `409` when a room type still has rooms. `RoomTypeRoomsPage` fetches both `getHotel(hotelId)` and `getRoomType(roomTypeId)` to render a header like "Rooms — Deluxe (Grand Hotel)". `RoomFormPage`'s create/update mutation gains an `onError` handler that checks `isAxiosError(err) && typeof err.response?.data === "string"` and displays the backend's message inline — the first form-level (not just delete-level) business-rule error surfaced in this project.
 
 ## Out of Scope (explicitly deferred, not silently dropped)
 
