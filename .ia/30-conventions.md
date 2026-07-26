@@ -9,4 +9,5 @@
 - Keep Program.cs minimal.
 - Controllers orchestrate only.
 - Use async/await.
-- Commit messages follow Conventional Commits.
+- Commit messages follow Conventional Commits. 
+- No co-author in commited messages.

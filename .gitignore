@@ -21,3 +21,6 @@ dist/
 *.swp
 .DS_Store
 Thumbs.db
+.ia/
+.claude/
+.superpowers
