@@ -53,18 +53,24 @@ public class RoomTypeService : IRoomTypeService
         return ToResponse(roomType);
     }
 
-    public async Task<bool> DeleteAsync(int id, CancellationToken cancellationToken)
+    public async Task<RoomTypeDeleteResult> DeleteAsync(int id, CancellationToken cancellationToken)
     {
         var roomType = await _dbContext.RoomTypes.FindAsync([id], cancellationToken);
         if (roomType is null)
         {
-            return false;
+            return RoomTypeDeleteResult.NotFound;
+        }
+
+        var hasRooms = await _dbContext.Rooms.AnyAsync(r => r.RoomTypeId == id, cancellationToken);
+        if (hasRooms)
+        {
+            return RoomTypeDeleteResult.HasRooms;
         }
 
         _dbContext.RoomTypes.Remove(roomType);
         await _dbContext.SaveChangesAsync(cancellationToken);
 
-        return true;
+        return RoomTypeDeleteResult.Deleted;
     }
 
     public async Task<RoomTypeResponse?> GetByIdAsync(int id, CancellationToken cancellationToken)

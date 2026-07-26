@@ -1,4 +1,5 @@
 using HotelBookingEngine.Api.Features.Hotels;
+using HotelBookingEngine.Api.Features.Rooms;
 using HotelBookingEngine.Api.Features.RoomTypes;
 using HotelBookingEngine.Api.Persistence;
 using Microsoft.Data.Sqlite;
@@ -89,23 +90,43 @@ public class RoomTypeServiceTests : IDisposable
     }
 
     [Fact]
-    public async Task DeleteAsync_WithExistingId_RemovesRoomTypeAndReturnsTrue()
+    public async Task DeleteAsync_WithExistingId_RemovesRoomTypeAndReturnsDeleted()
     {
         var hotelId = await CreateHotelAsync();
         var created = await _sut.CreateAsync(hotelId, SampleRequest(), CancellationToken.None);
 
         var result = await _sut.DeleteAsync(created!.Id, CancellationToken.None);
 
-        Assert.True(result);
+        Assert.Equal(RoomTypeDeleteResult.Deleted, result);
         Assert.Null(await _dbContext.RoomTypes.FindAsync(created.Id));
     }
 
     [Fact]
-    public async Task DeleteAsync_WithUnknownId_ReturnsFalse()
+    public async Task DeleteAsync_WithUnknownId_ReturnsNotFound()
     {
         var result = await _sut.DeleteAsync(999, CancellationToken.None);
 
-        Assert.False(result);
+        Assert.Equal(RoomTypeDeleteResult.NotFound, result);
+    }
+
+    [Fact]
+    public async Task DeleteAsync_WithExistingRooms_ReturnsHasRoomsAndDoesNotDelete()
+    {
+        var hotelId = await CreateHotelAsync();
+        var created = await _sut.CreateAsync(hotelId, SampleRequest(), CancellationToken.None);
+        _dbContext.Rooms.Add(new Room
+        {
+            RoomTypeId = created!.Id,
+            HotelId = hotelId,
+            RoomNumber = "101",
+            Status = RoomStatus.Available
+        });
+        await _dbContext.SaveChangesAsync();
+
+        var result = await _sut.DeleteAsync(created.Id, CancellationToken.None);
+
+        Assert.Equal(RoomTypeDeleteResult.HasRooms, result);
+        Assert.NotNull(await _dbContext.RoomTypes.FindAsync(created.Id));
     }
 
     [Fact]

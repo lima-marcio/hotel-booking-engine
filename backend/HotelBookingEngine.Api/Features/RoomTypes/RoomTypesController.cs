@@ -48,7 +48,7 @@ public class RoomTypesController : ControllerBase
     [Authorize(Roles = "Admin")]
     public async Task<IActionResult> Delete(int id, CancellationToken cancellationToken)
     {
-        var deleted = await _roomTypeService.DeleteAsync(id, cancellationToken);
-        return deleted ? NoContent() : NotFound();
+        var result = await _roomTypeService.DeleteAsync(id, cancellationToken);
+        return result == RoomTypeDeleteResult.Deleted ? NoContent() : NotFound();
     }
 }
