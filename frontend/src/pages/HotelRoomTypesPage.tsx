@@ -1,5 +1,7 @@
+import { useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { isAxiosError } from "axios";
 import { deleteRoomType, listRoomTypes } from "../features/roomTypes/roomTypeService";
 import { getHotel } from "../features/hotels/hotelService";
 import { useAuth } from "../hooks/useAuth";
@@ -9,6 +11,7 @@ export function HotelRoomTypesPage() {
   const hotelId = Number(hotelIdParam);
   const { user } = useAuth();
   const queryClient = useQueryClient();
+  const [deleteError, setDeleteError] = useState<string | null>(null);
 
   const { data: hotel } = useQuery({
     queryKey: ["hotels", hotelId],
@@ -23,7 +26,15 @@ export function HotelRoomTypesPage() {
   const deleteMutation = useMutation({
     mutationFn: deleteRoomType,
     onSuccess: () => {
+      setDeleteError(null);
       queryClient.invalidateQueries({ queryKey: ["hotels", hotelId, "room-types"] });
+    },
+    onError: (error) => {
+      const message =
+        isAxiosError(error) && typeof error.response?.data === "string"
+          ? error.response.data
+          : "Unable to delete this room type.";
+      setDeleteError(message);
     },
   });
 
@@ -50,6 +61,7 @@ export function HotelRoomTypesPage() {
 
       {isLoading && <p>Loading room types...</p>}
       {isError && <p>Unable to load room types.</p>}
+      {deleteError && <p className="text-sm text-red-600">{deleteError}</p>}
 
       {data && (
         <table className="w-full max-w-3xl border-collapse">
@@ -59,6 +71,7 @@ export function HotelRoomTypesPage() {
               <th className="p-2">Description</th>
               <th className="p-2">Capacity</th>
               <th className="p-2">Daily Rate</th>
+              <th className="p-2">Rooms</th>
               {isAdmin && <th className="p-2">Actions</th>}
             </tr>
           </thead>
@@ -69,6 +82,11 @@ export function HotelRoomTypesPage() {
                 <td className="p-2">{roomType.description}</td>
                 <td className="p-2">{roomType.capacity}</td>
                 <td className="p-2">{roomType.dailyRate}</td>
+                <td className="p-2">
+                  <Link to={`/hotels/${hotelId}/room-types/${roomType.id}/rooms`} className="text-blue-600 underline">
+                    Rooms
+                  </Link>
+                </td>
                 {isAdmin && (
                   <td className="flex gap-2 p-2">
                     <Link to={`/hotels/${hotelId}/room-types/${roomType.id}/edit`} className="text-blue-600 underline">
