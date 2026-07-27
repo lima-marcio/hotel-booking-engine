@@ -49,6 +49,12 @@ public class RoomTypesController : ControllerBase
     public async Task<IActionResult> Delete(int id, CancellationToken cancellationToken)
     {
         var result = await _roomTypeService.DeleteAsync(id, cancellationToken);
-        return result == RoomTypeDeleteResult.Deleted ? NoContent() : NotFound();
+        return result switch
+        {
+            RoomTypeDeleteResult.Deleted => NoContent(),
+            RoomTypeDeleteResult.NotFound => NotFound(),
+            RoomTypeDeleteResult.HasRooms => Conflict("Cannot delete a room type that still has rooms. Delete its rooms first."),
+            _ => throw new InvalidOperationException($"Unhandled {nameof(RoomTypeDeleteResult)} value: {result}")
+        };
     }
 }
