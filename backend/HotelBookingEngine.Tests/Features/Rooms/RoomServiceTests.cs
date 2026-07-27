@@ -153,6 +153,38 @@ public class RoomServiceTests : IDisposable
     }
 
     [Fact]
+    public async Task UpdateAsync_KeepingItsOwnRoomNumber_Succeeds()
+    {
+        var hotelId = await CreateHotelAsync();
+        var roomTypeId = await CreateRoomTypeAsync(hotelId);
+        var created = await _sut.CreateAsync(roomTypeId, SampleRequest("101"), CancellationToken.None);
+
+        var result = await _sut.UpdateAsync(
+            created.Room!.Id,
+            new RoomRequest { RoomNumber = "101", Status = RoomStatus.Maintenance },
+            CancellationToken.None);
+
+        Assert.Equal(RoomSaveOutcome.Success, result.Outcome);
+        Assert.Equal("101", result.Room!.RoomNumber);
+        Assert.Equal(RoomStatus.Maintenance, result.Room.Status);
+    }
+
+    [Fact]
+    public async Task UpdateAsync_WithRoomNumberUsedInDifferentHotel_Succeeds()
+    {
+        var hotelAId = await CreateHotelAsync("Hotel A");
+        var hotelBId = await CreateHotelAsync("Hotel B");
+        var roomTypeAId = await CreateRoomTypeAsync(hotelAId);
+        var roomTypeBId = await CreateRoomTypeAsync(hotelBId);
+        await _sut.CreateAsync(roomTypeAId, SampleRequest("101"), CancellationToken.None);
+        var second = await _sut.CreateAsync(roomTypeBId, SampleRequest("102"), CancellationToken.None);
+
+        var result = await _sut.UpdateAsync(second.Room!.Id, SampleRequest("101"), CancellationToken.None);
+
+        Assert.Equal(RoomSaveOutcome.Success, result.Outcome);
+    }
+
+    [Fact]
     public async Task DeleteAsync_WithExistingId_RemovesRoomAndReturnsTrue()
     {
         var hotelId = await CreateHotelAsync();

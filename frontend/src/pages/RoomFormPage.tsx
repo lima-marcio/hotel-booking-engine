@@ -47,7 +47,7 @@ export function RoomFormPage() {
   useEffect(() => {
     if (existingRoom && isEditMode) {
       if (existingRoom.roomTypeId !== roomTypeId) {
-        navigate(`/hotels/${hotelId}/room-types/${existingRoom.roomTypeId}/rooms`, { replace: true });
+        navigate(`/hotels/${existingRoom.hotelId}/room-types/${existingRoom.roomTypeId}/rooms`, { replace: true });
         return;
       }
 
