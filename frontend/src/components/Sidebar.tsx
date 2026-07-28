@@ -30,7 +30,7 @@ export function Sidebar() {
 
   return (
     <aside
-      className={`flex h-screen flex-col border-r bg-gray-50 transition-all ${collapsed ? "w-14" : "w-56"}`}
+      className={`flex h-screen flex-col border-r bg-gray-50 transition-all sticky top-0 ${collapsed ? "w-14" : "w-56"}`}
     >
       <div className="flex items-center justify-between p-3">
         {!collapsed && <span className="truncate text-sm font-semibold">Hotel Booking Engine</span>}

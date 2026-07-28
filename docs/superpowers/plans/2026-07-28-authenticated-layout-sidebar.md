@@ -346,7 +346,7 @@ Terminal 2: `cd frontend && npm run dev`
 
 In a browser:
 1. Go to `/` while logged out → no sidebar, just the title/API status/"Login" link.
-2. Go to `/login`, log in as `admin`/`Admin123!` → redirected/navigate to `/` → the sidebar now appears, expanded by default, showing "Hotels" (highlighted, since `/` does not start with `/hotels` — confirm it is *not* highlighted here) and the footer with "admin (Admin)" + "Logout".
+2. Go to `/login`, log in as `admin`/`Admin123!` → redirected/navigate to `/` → the sidebar now appears, expanded by default, showing "Hotels" (NOT highlighted, since `/` does not start with `/hotels`) and the footer with "admin (Admin)" + "Logout".
 3. Click "Hotels" in the sidebar → navigates to `/hotels`; the "Hotels" nav item is now highlighted.
 4. Click into "Room Types" then "Rooms" on any row → the sidebar persists unchanged on every nested page, still showing "Hotels" highlighted.
 5. Click the collapse toggle → sidebar shrinks to icon-only width; icons for "Hotels", the user avatar, and "Logout" remain, each with a hover tooltip (native `title`) showing the full label.
